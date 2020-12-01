@@ -1,5 +1,3 @@
-package com.main;
-
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
@@ -7,12 +5,14 @@ import java.awt.event.*;
 import java.text.ParseException;
 
 class portFrame extends JFrame implements component {
+    protected static boolean startFlag = false;
     private static int portNum1,portNum2,portNum3;
+    protected static boolean returnFlag = true;    //判断端口是否配置的标记
     portFrame() throws ParseException {
         JFrame pFrame = new JFrame("端口配置");
-        JLabel port1 = new JLabel("端口1", SwingConstants.CENTER);
-        JLabel port2 = new JLabel("端口2", SwingConstants.CENTER);
-        JLabel port3 = new JLabel("端口3", SwingConstants.CENTER);
+        JLabel port1 = new JLabel("端口1:");
+        JLabel port2 = new JLabel("端口2:");
+        JLabel port3 = new JLabel("端口3:");
         MaskFormatter maskFormatter = new MaskFormatter("####");
         JFormattedTextField port1_text = new JFormattedTextField(maskFormatter);
         port1_text.setFocusLostBehavior(JFormattedTextField.COMMIT);
@@ -22,17 +22,24 @@ class portFrame extends JFrame implements component {
         port3_text.setFocusLostBehavior(JFormattedTextField.COMMIT);
         JButton submit = new JButton("确认");
         Container con = pFrame.getContentPane();
-        pFrame.setSize(200, 150);
+        pFrame.setSize(275, 200);
         pFrame.setLocationRelativeTo(null);
         pFrame.setResizable(false);
-        pFrame.setLayout(new GridLayout(4, 2, 10, 5));
+        pFrame.setLayout(null);
         con.add(port1);
+        port1.setBounds(70,20,50,20);
         con.add(port1_text);
+        port1_text.setBounds(120,20,70,20);
         con.add(port2);
+        port2.setBounds(70,50,50,20);
         con.add(port2_text);
+        port2_text.setBounds(120,50,70,20);
         con.add(port3);
+        port3.setBounds(70,80,50,20);
         con.add(port3_text);
+        port3_text.setBounds(120,80,70,20);
         con.add(submit);
+        submit.setBounds(100,130,70,20);
         submit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -41,6 +48,7 @@ class portFrame extends JFrame implements component {
                     portNum2 = Integer.parseInt((String) port2_text.getValue());
                     portNum3 = Integer.parseInt((String) port3_text.getValue());
                     if(myJFrame.isPortOK(portNum1) && myJFrame.isPortOK(portNum2) && myJFrame.isPortOK(portNum3)) {
+                        returnFlag = false;
                         JOptionPane.showMessageDialog(pFrame,"配置成功！","完成",JOptionPane.INFORMATION_MESSAGE);
                         statusText.append("端口已配置完成：\n"+
                                 "端口1："+portNum1+
@@ -49,6 +57,7 @@ class portFrame extends JFrame implements component {
                         infoLamp1.setText("Port"+portNum1);
                         infoLamp2.setText("Port"+portNum2);
                         infoLamp3.setText("Port"+portNum3);
+                        startFlag = true;
                         pFrame.setVisible(false);
                     }
                     else if (!myJFrame.isPortOK(portNum1))

@@ -1,12 +1,11 @@
-package com.main;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerListening extends Thread implements component, Runnable {
     static boolean startFlag = true;
-    ServerSocket serverSocket;
+    private ServerSocket serverSocket;
+    private Socket socket;
     private int localPort;
     static boolean isRun;
 
@@ -18,7 +17,7 @@ public class ServerListening extends Thread implements component, Runnable {
                 serverSocket = new ServerSocket(localPort);
                 statusText.append("端口(" + localPort + ")监听已启动\n");
                 localPort = serverSocket.getLocalPort();
-                Socket socket = serverSocket.accept();
+                socket = serverSocket.accept();
                 if (localPort == portFrame.getPortNum1())
                     portLamp1.setIcon(green);
                 if (localPort == portFrame.getPortNum2())

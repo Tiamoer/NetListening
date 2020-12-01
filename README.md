@@ -77,4 +77,3 @@
 | serverSocket | ServerSocket | 服务器套接字对象             |
 | localPort    | int          | 监听的端口号，由set方法赋值  |
 | isRun        | boolean      | 判断线程的状态，是否存活     |
-
