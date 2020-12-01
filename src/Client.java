@@ -8,9 +8,9 @@ import java.net.Socket;
 
 public class Client {
     public static void main(String[] args) throws IOException {
-        new A(InetAddress.getLocalHost(),8080).start();
-        new A(InetAddress.getLocalHost(),1111).start();
-        new A(InetAddress.getLocalHost(),9110).start();
+        new A(InetAddress.getLocalHost(),9000).start();
+//        new A(InetAddress.getLocalHost(),1111).start();
+//        new A(InetAddress.getLocalHost(),9110).start();
     }
 }
 
