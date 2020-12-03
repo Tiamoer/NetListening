@@ -3,16 +3,12 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.ServerSocket;
+import java.io.IOException;
 import java.text.ParseException;
 
 public class myJFrame extends JFrame implements menu, component {
 
-    final ServerListening serverListening1 = new ServerListening();
-    final ServerListening serverListening2 = new ServerListening();
-    final ServerListening serverListening3 = new ServerListening();
-
-    public myJFrame() {
+    public myJFrame() throws IOException {
         //  菜单栏
         jMenuBar.setBackground(new Color(255, 255, 255));
         option.setMnemonic(KeyEvent.VK_O);
@@ -53,13 +49,16 @@ public class myJFrame extends JFrame implements menu, component {
         statusBar.setBackground(new Color(255, 255, 255));
         statusBar.setBounds(0, 420, 600, 23);
         //  状态输出窗口
-        statusText_Scroll.setBounds(0, 320, 600, 103);
+        statusText_Scroll.setBounds(0, 303, 600, 120);
         statusText.setEditable(false);
-        statusText.setBounds(0, 320, 600, 103);
+        statusText.setBounds(0, 303, 600, 120);
         statusText.setBackground(new Color(0, 0, 0));
         statusText.setForeground(Color.GREEN);
         statusText.setLineWrap(true);
         statusText.setFont(new Font("宋体", Font.PLAIN, 12));
+        statusText.setText("****************\n" +
+                           "*    WELCOME   *\n" +
+                           "****************\n");
         //  窗口
         JFrame jFrame = new JFrame();
         jFrame.setTitle("Network Listening --Tiamoer@outlook.com");
@@ -82,9 +81,8 @@ public class myJFrame extends JFrame implements menu, component {
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 //  软件启动后直接点击开始监听，直接报错
-                if (new ServerListening().getLocalPort()==0 && portFrame.returnFlag) {
+                if (new ServerListening(0).getLocalPort() == 0 && portFrame.returnFlag) {
                     JOptionPane.showMessageDialog(jFrame, "请先配置监听端口", "启动失败", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -96,23 +94,20 @@ public class myJFrame extends JFrame implements menu, component {
                 //  当线程处于暂停状态时，再次点击开始监听按钮就会启动线程
                 if (!ServerListening.startFlag) {
                     ServerListening.startFlag = true;
-                    statusText.append("端口"+serverListening1.getLocalPort()+"已启动\n" +
-                            "端口"+serverListening2.getLocalPort()+"已启动\n" +
-                            "端口"+serverListening3.getLocalPort()+"已启动\n");
-                    statusBar.setText("正在监听端口：" + serverListening1.getLocalPort()
-                            + "," + serverListening2.getLocalPort() + "," + serverListening3.getLocalPort());
+                    statusText.append("端口" + portFrame.getPortNum1() + "已启动\n" +
+                            "端口" + portFrame.getPortNum2() + "已启动\n" +
+                            "端口" + portFrame.getPortNum3() + "已启动\n");
+                    statusBar.setText("正在监听端口：" + portFrame.getPortNum1()
+                            + "," + portFrame.getPortNum2() + "," + portFrame.getPortNum3());
                     return;
                 }
                 //  启动监听
-                if (isPortOK(serverListening1.getLocalPort()) && isPortOK(serverListening2.getLocalPort()) && isPortOK(serverListening3.getLocalPort()) && ServerListening.startFlag) {
-                    serverListening1.setLocalPort(portFrame.getPortNum1());
-                    serverListening1.start();
-                    serverListening2.setLocalPort(portFrame.getPortNum2());
-                    serverListening2.start();
-                    serverListening3.setLocalPort(portFrame.getPortNum3());
-                    serverListening3.start();
-                    statusBar.setText("正在监听端口：" + serverListening1.getLocalPort()
-                            + "," + serverListening2.getLocalPort() + "," + serverListening3.getLocalPort());
+                if (ServerListening.startFlag) {
+                    new ServerListening(portFrame.getPortNum1()).start();
+                    new ServerListening(portFrame.getPortNum2()).start();
+                    new ServerListening(portFrame.getPortNum3()).start();
+                    statusBar.setText("正在监听端口：" + portFrame.getPortNum1()
+                            + "," + portFrame.getPortNum2() + "," + portFrame.getPortNum3());
                 } else {
                     JOptionPane.showMessageDialog(jFrame, "请确认端口配置是否正确或查看端口是否被占用", "启动失败", JOptionPane.ERROR_MESSAGE);
                 }
@@ -123,26 +118,28 @@ public class myJFrame extends JFrame implements menu, component {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //  停止监听服务
-               if (!ServerListening.isRun) {    //检测线程是否开始
-                   JOptionPane.showMessageDialog(jFrame, "监听程序未开始！", "错误", JOptionPane.ERROR_MESSAGE);
-                   return;
-               }
-               if (!ServerListening.startFlag){    //判断线程是否结束，已结束，提示错误，未结束，继续执行暂停线程操作
-                   JOptionPane.showMessageDialog(jFrame,"监听程序已结束！无需再次停止","错误",JOptionPane.ERROR_MESSAGE);
-                   return;
-               }
-                   ServerListening.startFlag = false;
-                   portLamp1.setIcon(red);
-                   portLamp2.setIcon(red);
-                   portLamp3.setIcon(red);
-                   statusBar.setText("停止监听");
-                   statusText.append("端口监听程序已停止！\n");
+                if (!ServerListening.isRun) {    //检测线程是否开始
+                    JOptionPane.showMessageDialog(jFrame, "监听程序未开始！", "错误", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (!ServerListening.startFlag) {    //判断线程是否结束，已结束，提示错误，未结束，继续执行暂停线程操作
+                    JOptionPane.showMessageDialog(jFrame, "监听程序已结束！无需再次停止", "错误", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                ServerListening.startFlag = false;
+                portLamp1.setIcon(red);
+                portLamp2.setIcon(red);
+                portLamp3.setIcon(red);
+                statusBar.setText("停止监听");
+                statusText.append("端口监听程序已停止！\n");
             }
         });
         exit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                if (ServerListening.startFlag)
+                    JOptionPane.showMessageDialog(jFrame, "请停止监听后再退出程序", "提醒", JOptionPane.ERROR_MESSAGE);
+                else System.exit(0);
             }
         });
         port.addActionListener(new ActionListener() {
@@ -150,7 +147,7 @@ public class myJFrame extends JFrame implements menu, component {
             public void actionPerformed(ActionEvent e) {
                 try {
                     if (portFrame.startFlag) {
-                        JOptionPane.showMessageDialog(jFrame,"请退出程序后重新打开程序配置端口","错误",JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(jFrame, "请退出程序后重新打开程序配置端口", "错误", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     new portFrame();
@@ -177,7 +174,6 @@ public class myJFrame extends JFrame implements menu, component {
                 //  关于我界面
                 class About extends JFrame {
                     final JTextArea jTextArea = new JTextArea();
-
                     About() {
                         JFrame pFrame = new JFrame("关于我");
                         pFrame.setSize(300, 200);
@@ -197,18 +193,7 @@ public class myJFrame extends JFrame implements menu, component {
         });
     }
 
-    //  端口检测方法
-    public static boolean isPortOK(int localPort) {
-        boolean flag = false;
-        try {
-            ServerSocket serverSocket = new ServerSocket(localPort);
-            flag = true;
-        } catch (Exception ignored) {
-        }
-        return flag;
-    }
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new myJFrame();
     }
 }

@@ -3,46 +3,52 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerListening extends Thread implements component {
+
+    protected static boolean isRun = false;
     protected static boolean startFlag = true;
-    private ServerSocket serverSocket = null;
     private int localPort;
-    protected static boolean isRun;
+    private ServerSocket serverSocket;
+    private Socket socket;
+    private String hostName;
+
+    ServerListening(int localPort) {
+        this.localPort = localPort;
+    }
 
     @Override
     public void run() {
         try {
+            System.out.println(localPort);
             serverSocket = new ServerSocket(localPort);
+            Thread.sleep(100);
+            statusText.append("正在监听端口"+localPort+"，等待客户机连接...\n");
             while (startFlag) {
-                isRun = this.isAlive();
-                statusText.append("端口(" + localPort + ")监听已启动\n");
-                localPort = serverSocket.getLocalPort();
-                Socket socket = serverSocket.accept();
+                isRun = currentThread().isAlive();
+                socket = serverSocket.accept();
+                statusBar.setText("侦测到客户机已连接");
+                hostName = new String(String.valueOf(socket.getInetAddress()));
                 if (localPort == portFrame.getPortNum1())
                     portLamp1.setIcon(green);
                 if (localPort == portFrame.getPortNum2())
                     portLamp2.setIcon(green);
                 if (localPort == portFrame.getPortNum3())
                     portLamp3.setIcon(green);
-                statusText.append("客户机已连接" + "端口：" + localPort + "\n");
-            }
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
-        } finally {
-            if (serverSocket != null) {
-                try {
-                    serverSocket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                statusText.append("客户机"+hostName+"已连接端口：" + localPort + "\n");
+                if (!socket.getKeepAlive()) {
+                    statusText.append("客户机已断开连接!\n");
+                    statusBar.setText("客户机已断开连接");
+                    portLamp1.setIcon(red);
+                    portLamp2.setIcon(red);
+                    portLamp3.setIcon(red);
+                    break;
                 }
             }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
     public int getLocalPort() {
         return localPort;
-    }
-
-    public void setLocalPort(int localPort) {
-        this.localPort = localPort;
     }
 }
