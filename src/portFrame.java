@@ -4,11 +4,16 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.text.ParseException;
+import java.util.Date;
+
+/**
+ *  端口配置窗口，以及端口是否被占用的检测
+ */
 
 class portFrame extends JFrame implements component {
 
-    protected static boolean startFlag = false;
-    private static int portNum1, portNum2, portNum3;
+    protected static boolean startFlag = false; //判断是否为第一次正确配置端口，第一次配置成功为true，失败为false
+    private static int portNum1, portNum2, portNum3;    //保存设置的端口号的变量
     protected static boolean returnFlag = true;    //判断端口是否配置的标记
 
     final JFrame pFrame = new JFrame("端口配置");
@@ -22,6 +27,12 @@ class portFrame extends JFrame implements component {
     final Container con = pFrame.getContentPane();
 
     portFrame() throws ParseException {
+
+        //  设置端口输入框限制，只能输入1-5位的数字
+        port1_text.setDocument(new NumberJTextField());
+        port2_text.setDocument(new NumberJTextField());
+        port3_text.setDocument(new NumberJTextField());
+
         pFrame.setSize(275, 200);
         pFrame.setLocationRelativeTo(null);
         pFrame.setResizable(false);
@@ -74,10 +85,10 @@ class portFrame extends JFrame implements component {
                     }
                     returnFlag = false;
                     JOptionPane.showMessageDialog(pFrame, "配置成功！", "完成", JOptionPane.INFORMATION_MESSAGE);
-                    statusText.append("端口已配置完成：\n" +
-                            "端口1：" + portNum1 +
-                            "\n端口2：" + portNum2 +
-                            "\n端口3：" + portNum3 + "\n");
+                    statusText.append("["+simpleDateFormat.format(new Date())+"]  "+"端口已配置完成：\n" +
+                            "["+simpleDateFormat.format(new Date())+"]  "+"端口1：" + portNum1 +
+                            "\n["+simpleDateFormat.format(new Date())+"]  "+"端口2：" + portNum2 +
+                            "\n["+simpleDateFormat.format(new Date())+"]  "+"端口3：" + portNum3 + "\n");
                     infoLamp1.setText("Port" + portNum1);
                     infoLamp2.setText("Port" + portNum2);
                     infoLamp3.setText("Port" + portNum3);
@@ -92,7 +103,7 @@ class portFrame extends JFrame implements component {
     }
 
     //  判断输入的端口号是否符合的方法
-    protected int formatText(String str, int n) {
+    private int formatText(String str, int n) {
         int temp;
         if (str.equals(""))
             return 0;
@@ -113,7 +124,7 @@ class portFrame extends JFrame implements component {
     }
 
     //  检测端口是否占用的方法
-    public static boolean isPortOK(int localPort) throws IOException {
+    private static boolean isPortOK(int localPort) throws IOException {
             ServerSocket serverSocket = null;
             serverSocket = new ServerSocket(localPort);
             if (serverSocket != null) {
@@ -133,5 +144,17 @@ class portFrame extends JFrame implements component {
 
     public static int getPortNum3() {
         return portNum3;
+    }
+
+    public static void setPortNum1(int portNum1) {
+        portFrame.portNum1 = portNum1;
+    }
+
+    public static void setPortNum2(int portNum2) {
+        portFrame.portNum2 = portNum2;
+    }
+
+    public static void setPortNum3(int portNum3) {
+        portFrame.portNum3 = portNum3;
     }
 }

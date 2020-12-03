@@ -8,8 +8,8 @@ import java.net.Socket;
 
 public class Client {
     public static void main(String[] args) throws IOException {
-        new A(InetAddress.getLocalHost(),565).start();
-        new A(InetAddress.getLocalHost(),4864).start();
+        new A(InetAddress.getLocalHost(),3124).start();
+        new A(InetAddress.getLocalHost(),5342).start();
         new A(InetAddress.getLocalHost(),9548).start();
     }
 }

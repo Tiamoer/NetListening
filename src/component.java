@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 interface component {
     final JTextArea statusText = new JTextArea();   //状态输出台
@@ -12,4 +14,5 @@ interface component {
     final JLabel infoLamp1 = new JLabel("端口1");   //接口1灯的文字标签
     final JLabel infoLamp2 = new JLabel("端口2");
     final JLabel infoLamp3 = new JLabel("端口3");
+    final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 }

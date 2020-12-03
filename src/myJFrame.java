@@ -1,10 +1,17 @@
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.text.Caret;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Date;
+
+/**
+ *  主窗口
+ */
 
 public class myJFrame extends JFrame implements menu, component {
 
@@ -20,8 +27,6 @@ public class myJFrame extends JFrame implements menu, component {
         start.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));  //设置助记符
         option.add(start);
         stop.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
-        // option.add(run);
-        // run.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
         option.add(stop);
         option.addSeparator();
         exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
@@ -50,6 +55,8 @@ public class myJFrame extends JFrame implements menu, component {
         statusBar.setBounds(0, 420, 600, 23);
         //  状态输出窗口
         statusText_Scroll.setBounds(0, 303, 600, 120);
+        DefaultCaret caret = (DefaultCaret) statusText.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         statusText.setEditable(false);
         statusText.setBounds(0, 303, 600, 120);
         statusText.setBackground(new Color(0, 0, 0));
@@ -94,9 +101,9 @@ public class myJFrame extends JFrame implements menu, component {
                 //  当线程处于暂停状态时，再次点击开始监听按钮就会启动线程
                 if (!ServerListening.startFlag) {
                     ServerListening.startFlag = true;
-                    statusText.append("端口" + portFrame.getPortNum1() + "已启动\n" +
-                            "端口" + portFrame.getPortNum2() + "已启动\n" +
-                            "端口" + portFrame.getPortNum3() + "已启动\n");
+                    statusText.append("["+simpleDateFormat.format(new Date())+"]  "+"端口" + portFrame.getPortNum1() + "已启动\n" +
+                            "["+simpleDateFormat.format(new Date())+"]  "+"端口" + portFrame.getPortNum2() + "已启动\n" +
+                            "["+simpleDateFormat.format(new Date())+"]  "+"端口" + portFrame.getPortNum3() + "已启动\n");
                     statusBar.setText("正在监听端口：" + portFrame.getPortNum1()
                             + "," + portFrame.getPortNum2() + "," + portFrame.getPortNum3());
                     return;
@@ -131,7 +138,7 @@ public class myJFrame extends JFrame implements menu, component {
                 portLamp2.setIcon(red);
                 portLamp3.setIcon(red);
                 statusBar.setText("停止监听");
-                statusText.append("端口监听程序已停止！\n");
+                statusText.append("["+simpleDateFormat.format(new Date())+"]  "+"端口监听程序已停止！\n");
             }
         });
         exit.addActionListener(new ActionListener() {
